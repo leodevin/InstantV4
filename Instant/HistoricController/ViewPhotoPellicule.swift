@@ -17,13 +17,17 @@ class ViewPhotoPellicule: UIViewController, UICollectionViewDataSource, UICollec
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        NotificationCenter.default.post(name: NSNotification.Name("download"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(reloadUser), name: NSNotification.Name("reloadUser") , object: nil)
     }
     
     @IBAction func onClickDone(_ sender: Any) {
         self.dismiss(animated: true, completion: nil)
     }
     
-    
+    @objc func reloadUser(){
+        photoCollectionView.reloadData()
+    }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return self.userTabImage.count

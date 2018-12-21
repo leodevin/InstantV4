@@ -24,7 +24,7 @@ class addPellViewController : UIViewController, ChangeImageIcone {
     
     override func viewDidLoad() {
         iconeButton.layer.cornerRadius = 6
-        createButton.layer.cornerRadius = 15
+        createButton.layer.cornerRadius = 20
         createButton.layer.backgroundColor = UIColor.orange.cgColor
         createButton.titleLabel?.textColor = UIColor.white
     }
@@ -45,11 +45,11 @@ class addPellViewController : UIViewController, ChangeImageIcone {
     }
     @IBAction func addPellButton(_ sender: Any) {
         //on récupère les informations et on les envoies dans la firebase
-        self.user = UserProfile(db: Firestore.firestore(), id : (Auth.auth().currentUser?.uid)!)
+        //self.user = UserProfile(db: Firestore.firestore(), id : (Auth.auth().currentUser?.uid)!, type : 1)
         
         if(pellNameTF.text != nil)
         {
-        db.collection("users").document(user.id).collection("pellicule").document(pellNameTF.text!).setData([
+            db.collection("users").document((Auth.auth().currentUser?.uid)!).collection("pellicule").document(pellNameTF.text!).setData([
                 "name": pellNameTF.text!,
                 "date_init": initDate(),
                 "icon": iconeButton.image(for: .normal)?.accessibilityIdentifier ?? "randonné",

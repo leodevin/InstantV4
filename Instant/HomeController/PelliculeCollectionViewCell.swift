@@ -69,7 +69,6 @@ class PelliculeCollectionViewCell: UICollectionViewCell, UIImagePickerController
     
     @IBAction func pressDelete(_ sender : Any){
         if cellButton.accessibilityIdentifier != "addButton" {
-            
             self.homeController.currentCell = cellButton.accessibilityIdentifier
             NotificationCenter.default.post(name: NSNotification.Name(rawValue: "deleteCell"), object: nil)
         }

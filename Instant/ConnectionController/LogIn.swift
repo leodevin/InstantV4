@@ -29,7 +29,7 @@ class LogIn: UIViewController {
             if CheckInternet.Connection(){
                 self.performSegue(withIdentifier: "login", sender: self)
             } else{
-                alert("Internet", message: "Disconnected")
+                alert("Internet", message: "No connection enable")
             }
         }
     }
@@ -46,26 +46,25 @@ class LogIn: UIViewController {
     
     
     @IBAction func logInAuthentification(sender : Any?){
-        if  email.text != "" && password.text != "" {
-            Auth.auth().signIn(withEmail: email.text!, password: password.text!){ User, Error in
-                if Error == nil && User != nil{
-                    print("User sign in !")
-                    self.performSegue(withIdentifier: "login", sender: self)
-                    
-                } else{
-                    print("Error creating user : \(String(describing: Error?.localizedDescription))")
+        if CheckInternet.Connection(){
+            if  email.text != "" && password.text != "" {
+                Auth.auth().signIn(withEmail: email.text!, password: password.text!){ User, Error in
+                    if Error == nil && User != nil{
+                        print("User sign in !")
+                        self.performSegue(withIdentifier: "login", sender: self)
+                        
+                    } else{
+                        print("Error creating user : \(String(describing: Error?.localizedDescription))")
+                    }
                 }
+            } else{
+                alert("Error", message: "Please fill up all fields in order to login")
             }
         } else{
-            alert("Error", message: "Please fill up all fields in order to login")
+            alert("Internet", message: "No connection enable")
         }
     }
-    
-    
-    
-    
-    
-    
+
     
     func alert(_ title: String, message: String) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)

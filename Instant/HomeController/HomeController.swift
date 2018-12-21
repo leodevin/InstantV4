@@ -13,8 +13,8 @@ import WhatsNewKit
 
 class HomeController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UICollectionViewDataSource, UICollectionViewDelegate {
 
-
-    @IBOutlet var signOut : UIButton!
+    @IBOutlet weak var welcomeMessage: UILabel!
+    
     @IBOutlet var pelliculeCollectionView: UICollectionView!
     var user : UserProfile!
     var currentCell : String!
@@ -23,11 +23,13 @@ class HomeController: UIViewController, UIImagePickerControllerDelegate, UINavig
     let db =  Firestore.firestore()
     let storageRef = Storage.storage()
     
+
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.user = UserProfile(db: Firestore.firestore(), id : (Auth.auth().currentUser?.uid)!)
+        self.user = UserProfile(db: Firestore.firestore(), id : (Auth.auth().currentUser?.uid)!, type : 1)
+
         NotificationCenter.default.addObserver(self, selector: #selector(collectionViewReload), name: NSNotification.Name("reload") , object: nil)
         
         NotificationCenter.default.addObserver(self, selector: #selector(reloadfromDB(_:)), name: NSNotification.Name("reloadFromDB"), object: nil)
@@ -40,6 +42,40 @@ class HomeController: UIViewController, UIImagePickerControllerDelegate, UINavig
         
         NotificationCenter.default.addObserver(self, selector: #selector(logOutSettingButton), name: NSNotification.Name("signOut") , object: nil)
     }
+    
+    
+    /// _________________ COLLECTION VIEW INIT _____________________ ///
+    
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return self.user.tabPellicule.count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell{
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath) as! PelliculeCollectionViewCell
+        cell.displayContent(homeController: self,pellicule: self.user.tabPellicule[indexPath.row], pell_name: self.user.tabPellicule[indexPath.row].nom, pell_initDate: self.user.tabPellicule[indexPath.row].startDate)
+        
+        return cell
+    }
+    
+    
+    /// ________________________ RELOAD FROM DB ________________________ ///
+    
+    
+    @IBAction func reloadfromDB(_ sender: Any) {
+        self.user = UserProfile(db: Firestore.firestore(), id : (Auth.auth().currentUser?.uid)!,type : 1)
+        NotificationCenter.default.addObserver(self, selector: #selector(collectionViewReload), name: NSNotification.Name("reload") , object: nil)
+    }
+    
+    @objc func collectionViewReload(){
+        self.pelliculeCollectionView.reloadData()
+    }
+    
+    
+    
+    
+    
+    
+    /// _________________ DELETE CELL PELL _____________________ ///
     
     @objc func deleteCell(){
         let alert = UIAlertController(title: "Delete Pellicule", message: "Are you sure to delete this pellicule ?", preferredStyle: .alert)
@@ -58,41 +94,14 @@ class HomeController: UIViewController, UIImagePickerControllerDelegate, UINavig
     }
 
     
+   
+    
+    /// _________________ LAUNCH THE ADD PELLICULE CONTROLLER _____________________ ///
+    
     @objc func addPellicule (){
         self.performSegue(withIdentifier: "GoToAddPellStoryBoard", sender:self)
     }
     
-    
-    /// _________________ COLLECTION VIEW INIT _____________________ ///
-    
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return self.user.tabPellicule.count
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell{
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath) as! PelliculeCollectionViewCell
-        cell.displayContent(homeController: self,pellicule: self.user.tabPellicule[indexPath.row], pell_name: self.user.tabPellicule[indexPath.row].nom, pell_initDate: self.user.tabPellicule[indexPath.row].startDate)
-        
-        return cell
-    }
-    
-    /// ______________________________________________________________ ///
-    
-    
-    
-    
-    
-    @IBAction func reloadfromDB(_ sender: Any) {
-        self.user = UserProfile(db: Firestore.firestore(), id : (Auth.auth().currentUser?.uid)!)
-        NotificationCenter.default.addObserver(self, selector: #selector(collectionViewReload), name: NSNotification.Name("reload") , object: nil)
-    }
-    
-    @objc func collectionViewReload(){
-        self.pelliculeCollectionView.reloadData()
-    }
-    
-    
-
     
     
     /// _________________ TAKE PHOTO _____________________ ///
@@ -154,7 +163,10 @@ class HomeController: UIViewController, UIImagePickerControllerDelegate, UINavig
         return randomString
     }
     
-    /// ______________________________________________________________ ///
+    
+    
+    
+    /// ________________________ ADD THE DOWNLOAD URL TO THE DATABASE ________________________ ///
 
     
     /// REMPLI LES CHAMPS DE DOWNLOAD URL DE LA DATABASE AVEC LES BON URL
@@ -170,6 +182,8 @@ class HomeController: UIViewController, UIImagePickerControllerDelegate, UINavig
                 }
         }
     }
+    
+    /// ________________________ CHECK THE NUMBER OF PHOTOS IN THE PELLICULE ________________________ ///
     
     func checkNumberOfPhotos(){
         var count : Int = 0
@@ -188,8 +202,8 @@ class HomeController: UIViewController, UIImagePickerControllerDelegate, UINavig
     }
     
     
-    
-    
+    /// ________________________ LOG OUT USER ________________________ ///
+
     @objc func logOutSettingButton(){
         try! Auth.auth().signOut()
         dismiss(animated: true, completion: nil)
@@ -201,7 +215,7 @@ class HomeController: UIViewController, UIImagePickerControllerDelegate, UINavig
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        
+        welcomeMessage.text = "Welcome on Insant " +  (Auth.auth().currentUser?.displayName)!
         whatsNewIfNeeded()
     }
     
