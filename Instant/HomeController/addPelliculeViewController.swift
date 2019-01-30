@@ -59,12 +59,11 @@ class addPellViewController : UIViewController, ChangeImageIcone {
                         print("Error writing document: \(err)")
                     } else {
                         print("Document successfully written!")
+                        NotificationCenter.default.post(name: NSNotification.Name("reloadFromDB"), object: nil)
+                        self.dismiss(animated: true, completion: nil)
                     }
             }
-            NotificationCenter.default.post(name: NSNotification.Name("reloadFromDB"), object: nil)
-            
         }
-        self.dismiss(animated: true, completion: nil)
     }
     
     func alert(_ title: String, message: String) {

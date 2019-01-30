@@ -538,7 +538,7 @@
                     <navigationItem key="navigationItem" id="Sgl-Q9-RZj"/>
                     <connections>
                         <outlet property="pelliculeCollectionView" destination="M0c-T2-AjI" id="nMu-5q-xDP"/>
-                        <outlet property="welcomeMessage" destination="qGc-nP-laU" id="bFh-IO-3Nb"/>
+                        <outlet property="welcomeMessage" destination="qGc-nP-laU" id="9xI-rj-qf1"/>
                         <segue destination="ZRK-pc-32X" kind="presentation" identifier="GoToAddPellStoryBoard" modalPresentationStyle="overCurrentContext" id="pM8-er-VfR"/>
                     </connections>
                 </viewController>
@@ -1072,6 +1072,6 @@
         <image name="randonné" width="970" height="970"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="jX6-hd-n33"/>
+        <segue reference="vgA-lf-IIc"/>
     </inferredMetricsTieBreakers>
 </document>

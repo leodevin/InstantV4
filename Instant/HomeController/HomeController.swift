@@ -27,9 +27,9 @@ class HomeController: UIViewController, UIImagePickerControllerDelegate, UINavig
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        print("-----------------********--------------")
         self.user = UserProfile(db: Firestore.firestore(), id : (Auth.auth().currentUser?.uid)!, type : 1)
-
+        
         NotificationCenter.default.addObserver(self, selector: #selector(collectionViewReload), name: NSNotification.Name("reload") , object: nil)
         
         NotificationCenter.default.addObserver(self, selector: #selector(reloadfromDB(_:)), name: NSNotification.Name("reloadFromDB"), object: nil)
@@ -67,6 +67,8 @@ class HomeController: UIViewController, UIImagePickerControllerDelegate, UINavig
     }
     
     @objc func collectionViewReload(){
+        let text = "Welcome on Insant " + (Auth.auth().currentUser?.displayName)!
+        self.welcomeMessage.text = text
         self.pelliculeCollectionView.reloadData()
     }
     
@@ -122,18 +124,20 @@ class HomeController: UIViewController, UIImagePickerControllerDelegate, UINavig
             /// ****** INSERTION IMAGE DANS STORAGE ******** ///
 
             let random = generateRandomStringWithLength(length: 20)
+            let imageRef = Storage.storage().reference().child("users/" + self.user.id + "/" + random)
             let metaDataForImage = StorageMetadata()
             metaDataForImage.contentType = "image/jpeg"
             
+            print("Begin ......")
+            
             var data = Data()
             data = (pickedImage.jpegData(compressionQuality: 0.8)!)
-            
-            let imageRef = Storage.storage().reference().child("users/" + self.user.id + "/" + random)
             _ = imageRef.putData(data, metadata: metaDataForImage){ (metadata,Error) in
                 if Error != nil{
                     print(Error as Any)
                     return
                 }else{
+                    print("End ......")
                     imageRef.downloadURL(completion: { (Url, Error) in
                         if Error != nil{
                             print(Error as Any)
@@ -171,8 +175,7 @@ class HomeController: UIViewController, UIImagePickerControllerDelegate, UINavig
     
     /// REMPLI LES CHAMPS DE DOWNLOAD URL DE LA DATABASE AVEC LES BON URL
     func addDownloadURLToDatabase(downloadURL : String){
-
-    db.collection("users").document(user.id).collection("pellicule").document(self.currentCell).collection("images").document().setData([
+        db.collection("users").document(user.id).collection("pellicule").document(self.currentCell).collection("images").document().setData([
             "downloadURL" : downloadURL]){ err in
                 if let err = err {
                     print("Error writing document: \(err)")
@@ -192,7 +195,7 @@ class HomeController: UIViewController, UIImagePickerControllerDelegate, UINavig
                 print("Error getting documents: \(err)")
             } else {
                 for _ in querySnapshot!.documents {count = count + 1}
-                if count == 2{
+                if count == 10{
                 self.db.collection("users").document(self.user.id).collection("pellicule").document(self.currentCell).updateData(["fini" : true])
                     NotificationCenter.default.post(name: NSNotification.Name("reloadFromDB"), object: nil)
 
@@ -215,7 +218,6 @@ class HomeController: UIViewController, UIImagePickerControllerDelegate, UINavig
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        welcomeMessage.text = "Welcome on Insant " +  (Auth.auth().currentUser?.displayName)!
         whatsNewIfNeeded()
     }
     

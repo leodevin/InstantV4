@@ -28,6 +28,7 @@ class UserProfile {
                 self.name = document.get("name") as? String
                 self.email = document.get("email") as? String
                 print(document.get("name")!)
+                print(document.get("email")!)
             } else {
                 print("ERROR")
                 }

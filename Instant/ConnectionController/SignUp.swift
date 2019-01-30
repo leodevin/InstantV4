@@ -29,9 +29,8 @@ class SignUp: UIViewController {
     
     
     @IBAction func signUpAuthentification(sender : Any?){
-        
-        if CheckInternet.Connection(){
-            if username.text != "" && email.text != "" && password.text != "" {
+
+        if username.text != "" && email.text != "" && password.text != "" {
                 // Création d'un USER
                 Auth.auth().createUser(withEmail: email.text!, password: password.text!){ User, Error in
                     if Error == nil && User != nil{
@@ -44,19 +43,28 @@ class SignUp: UIViewController {
                         changeRequest?.commitChanges{ Error in
                             if Error == nil{
                                 print("User display name changed !")
-                                self.performSegue(withIdentifier: "signup", sender: self)
+                                _ = Firestore.firestore().collection("users").document((Auth.auth().currentUser?.uid)!).setData([
+                                    "email" : Auth.auth().currentUser?.email as Any,
+                                    "name" : self.username.text as Any
+                                ]){ err in
+                                    if let err = err {
+                                        print("Error writing document: \(err)")
+                                    } else {
+                                        self.performSegue(withIdentifier: "signup", sender: self)
+                                        print("Document successfully written!")
+                                    }
+                                }
+                                
                             }
                         }
                     } else{
+                        self.alert("Error creating User", message: "\(String(describing: Error?.localizedDescription))")
                         print("Error creating user : \(String(describing: Error?.localizedDescription))")
                     }
                 }
             } else{
                 alert("Error", message: "Please fill up all fields in order to subscribe")
             }
-        }else{
-            alert("Internet", message: "No connection enable")
-        }
     }
     
     

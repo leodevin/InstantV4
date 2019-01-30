@@ -26,13 +26,17 @@ class LogIn: UIViewController {
         super.viewDidDisappear(animated)
         
         if Auth.auth().currentUser != nil{
-            if CheckInternet.Connection(){
+            try! Auth.auth().signOut()
+
+            /*if CheckInternet.Connection(){
                 self.performSegue(withIdentifier: "login", sender: self)
             } else{
                 alert("Internet", message: "No connection enable")
-            }
+            }*/
         }
     }
+    
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -46,22 +50,19 @@ class LogIn: UIViewController {
     
     
     @IBAction func logInAuthentification(sender : Any?){
-        if CheckInternet.Connection(){
-            if  email.text != "" && password.text != "" {
+        if  email.text != "" && password.text != "" {
                 Auth.auth().signIn(withEmail: email.text!, password: password.text!){ User, Error in
                     if Error == nil && User != nil{
                         print("User sign in !")
                         self.performSegue(withIdentifier: "login", sender: self)
                         
                     } else{
+                        self.alert("Error creating User", message: "\(String(describing: Error?.localizedDescription))")
                         print("Error creating user : \(String(describing: Error?.localizedDescription))")
                     }
                 }
             } else{
                 alert("Error", message: "Please fill up all fields in order to login")
-            }
-        } else{
-            alert("Internet", message: "No connection enable")
         }
     }
 
